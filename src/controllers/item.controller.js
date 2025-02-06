@@ -3,8 +3,6 @@ const Item = require('../models/item');
 class ItemController {
   async getItems(req, res) {
     try {
-      process.exit(1);
-
       const items = await Item.find();
       res.json(items);
     } catch (error) {
@@ -12,28 +10,29 @@ class ItemController {
     }
   }
 
-  // async createItem(req, res) {
-  //   try {
-  //     const { name } = req.body;
+  async createItem(req, res) {
+    try {
+      const { name, icon, discoveredBy } = req.body;
 
-  //     const item = await Item.findOne().where('name').equals(name);
+      const item = await Item.findOne().where('name').equals(name);
 
-  //     if (item.)
+      if (item !== null) {
+        const newItem = new Item({
+          name
+        });
 
-  //     const newItem = new Item({
-  //       name,
-  //       icon,
-        
-  //     });
+        await newItem.save();
 
-  //     await newItem.save();
-  //     console.log('Item created:', newItem);
+        console.log('Item created:', newItem);
 
-  //     res.status(201).json({ token });
-  //   } catch (error) {
-  //     res.status(500).json({ message: 'Server error' });
-  //   }
-  // }
+        res.json(newItem);
+      } else {
+        res.json(item);
+      }
+    } catch (error) {
+      res.status(500).json({ message: 'Server error' });
+    }
+  }
 }
 
 module.exports = new ItemController();

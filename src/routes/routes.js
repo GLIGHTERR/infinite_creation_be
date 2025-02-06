@@ -1,11 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const itemController = require('../controllers/item.controller');
+const combinationController = require('../controllers/combination.controller');
 
-router.get('/ping', (req, res) => {
-	res.status(200).json({ message: 'Server is running!' });
-});
+router.post('/combine', combinationController.combineItems);
 router.get('/', itemController.getItems);
-// router.post('/', itemController.createItem);
+router.post('/', itemController.createItem);
 
 module.exports = router;
