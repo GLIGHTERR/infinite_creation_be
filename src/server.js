@@ -7,6 +7,10 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const connectDB = require('./config/database');
 const seedDatabase = require('./scripts/seed');
+const authRoute = require('./routes/auth_route');
+const gameRoute = require('./routes/game_route');
+const authenticateToken = require('./middleware/auth');
+const getIPv4Address = require('./utils/util');
 
 // Kết nối cơ sở dữ liệu
 connectDB();
@@ -21,8 +25,18 @@ app.get('/ping', (req, res) => {
 });
 
 // Routes
-app.use('/api/items', require('./routes/routes'));
+app.use('/auth', authRoute);
 
-app.listen(PORT, () => {
+// Middleware
+app.use('/api', authenticateToken);
+app.use('/api/items', gameRoute);
+
+// Server error
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ message: 'Something broke!' });
+});
+
+app.listen(PORT, getIPv4Address(), () => {
   console.log(`Server running on port ${PORT}`);
 });

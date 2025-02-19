@@ -1,12 +1,23 @@
 const Item = require('../models/item');
+const User = require('../models/user');
 
 class ItemController {
   async getItems(req, res) {
     try {
-      const items = await Item.find();
-      res.json(items);
+      const userId = req.user.id;
+
+      const user = await User.findById(userId)
+        .select('discoveredItems');
+      const items = await Item.find({
+        $or: [
+          { isBasic: true },
+          { _id: { $in: user.discoveredItems } }
+        ]
+      });
+
+      return res.status(200).json(items);
     } catch (error) {
-      res.status(500).json({ message: 'Server error' });
+      return res.status(500).json({ message: 'Server error' });
     }
   }
 
